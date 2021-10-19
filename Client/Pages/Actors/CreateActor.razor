@@ -1,0 +1,29 @@
+@page "/actors/create"
+@using MoviesProject.Client.Pages.Components
+@inject IServiceMovies repositorio
+@inject NavigationManager navigationManager
+@inject IErrorMessage mostrarMensajes
+
+<h3>Crear actores</h3>
+<FormActor OnValidSubmit="Create" Actor="Actor" />
+@code{
+    private Actor Actor = new Actor();
+    private async Task Create()
+    {
+        @* Console.WriteLine(Actor.ActorName);
+        Console.WriteLine(Actor.BirthDate);
+        Console.WriteLine(Actor.KnowCredits);
+        Console.WriteLine(Actor.Nominations);
+        Console.WriteLine(Actor.Biography);
+        Console.WriteLine(Actor.Picture); *@
+        var httpResponse = await repositorio.Post("api/actors", Actor);
+        if (httpResponse.Error)
+        {
+            await mostrarMensajes.ShowErrorMessage(await httpResponse.GetBody());
+        }
+        else
+        {
+            navigationManager.NavigateTo("/actors");
+        }
+    }
+}

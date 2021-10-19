@@ -1,0 +1,62 @@
+@page "/actor/{ActorId:int}/{Name}"
+@using MoviesProject.Client.Pages.Components;
+@inject IServiceMovies repositorio;
+@inject IErrorMessage showMessage
+@inject NavigationManager navigationManager
+
+@if (model == null)
+{
+    <text>Cargando...</text>
+}
+else
+{
+    <h2>@model.Actor.ActorName</h2>
+    <div style="display: flex;">
+        <span style="display: inline-block; margin-right: 5px;"><img src="@model.Actor.Picture" style="width: 225px; height: 315px;"></span>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <h3>Biografía</h3>
+        <p>@model.Actor.Biography</p>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <h3>Películas</h3>
+        <div style="display: flex; flex-direction: column">
+            @foreach (var movie in model.Movies)
+            {
+                <div style="margin-bottom: 2px;">
+                    <img style="width: 50px;" src="@movie.MovieImage" />
+                    <span style="display:inline-block;width: 200px;"><a href="/movies/@movie.Id/@movie.MovieTitle.Replace(" ", "-")">@movie.MovieTitle</a></span>
+                    <span style="display:inline-block; width: 45px;">...</span>
+                </div>
+            }
+        </div>
+    </div>
+}
+@code {
+    [Parameter] public int ActorId{get;set;}
+    [Parameter] public string Name{get;set;}
+    private ShowActorDB model;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHttp = await repositorio.Get<ShowActorDB>($"api/actors/{ActorId}");
+        if(responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    navigationManager.NavigateTo("");
+                }
+                else
+                {
+                    var mensajeError = await responseHttp.GetBody();
+                    await showMessage.ShowErrorMessage(mensajeError);
+                }
+        }
+        else
+        {
+            model = responseHttp.Response;
+        }
+    }
+}

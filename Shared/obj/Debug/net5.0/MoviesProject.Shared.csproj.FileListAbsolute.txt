@@ -1,0 +1,12 @@
+C:\MoviesProject\Shared\bin\Debug\net5.0\MoviesProject.Shared.deps.json
+C:\MoviesProject\Shared\bin\Debug\net5.0\MoviesProject.Shared.dll
+C:\MoviesProject\Shared\bin\Debug\net5.0\ref\MoviesProject.Shared.dll
+C:\MoviesProject\Shared\bin\Debug\net5.0\MoviesProject.Shared.pdb
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.csproj.AssemblyReference.cache
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.AssemblyInfoInputs.cache
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.AssemblyInfo.cs
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.csproj.CoreCompileInputs.cache
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.dll
+C:\MoviesProject\Shared\obj\Debug\net5.0\ref\MoviesProject.Shared.dll
+C:\MoviesProject\Shared\obj\Debug\net5.0\MoviesProject.Shared.pdb

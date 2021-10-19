@@ -1,0 +1,52 @@
+<div>
+    <div class="row">
+        <div class="col">
+            <label for="" class="form-label">@Label
+            @* Solo se permite la carga de una imagen *@
+            <InputFile OnChange="OnChange" accept=".jpg, .png, .jpeg"></InputFile>
+            @* Para múltiples imágenes
+                <InputFile multiple OnChange="OnChange" accept=".jpg, .png, .jpeg"></InputFile> *@
+                </label>
+        </div>
+    </div>
+
+    <div>
+        @if (imageT != null)
+        {
+            <div>
+                <div style="margin:10px">
+                    <img src="data:image/jpeg;base64,@imageT" width="300px" alt="">
+                </div>
+            </div>
+        }
+
+        @if (ImageURL != null)
+        {
+            <div>
+                <div style="margin:10px">
+                    <img src="@ImageURL" width="300px" alt="">
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter] public string Label { get; set; } = "Imagen";
+    [Parameter] public string ImageURL { get; set; }
+    [Parameter] public EventCallback<String> ImageSelected { get; set; }
+
+    private string imageT;
+    async Task OnChange(InputFileChangeEventArgs e)
+    {
+        var images = e.GetMultipleFiles();
+        foreach (var image in images)
+        {
+            var size = new byte[image.Size];
+            await image.OpenReadStream().ReadAsync(size);
+            imageT = Convert.ToBase64String(size);
+            ImageURL = null;
+            await ImageSelected.InvokeAsync(imageT);
+            StateHasChanged();
+        }
+    }
+}

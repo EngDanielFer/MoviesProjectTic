@@ -1,0 +1,79 @@
+@page "/movies/{MovieId:int}"
+@page "/movies/{MovieId:int}/{Name}"
+@using MoviesProject.Client.Pages.Components;
+@inject IServiceMovies repositorio;
+@inject IErrorMessage showMessage
+@inject NavigationManager navigationManager
+
+@if (model == null)
+{
+    <text>Cargando...</text>
+}
+else
+{
+    <h2>@model.Movie.MovieTitle (@model.Movie.PremiereDate.Value.ToString("yyyy"))</h2>
+    for (int i = 0; i < model.Categories.Count; i++)
+    {
+        if (i < model.Categories.Count - 1)
+        {
+            @linkCategory(model.Categories[i])<text>, </text>
+        }
+        else
+        {
+            @linkCategory(model.Categories[i])
+        }
+    }
+    <text> | </text> <span>@model.Movie.PremiereDate.Value.ToString("dd-MM-yyyy")</span>
+    <text> | Promedio: </text> @model.AvgVote.ToString("0.#") <text>/5 | Tu voto: </text> @model.UserVote.ToString("0.#")
+    <div style="display: flex;">
+        <span style="display: inline-block; margin-right: 5px;"><img src="@model.Movie.MovieImage" style="width: 225px; height: 315px;"></span>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/@model.Movie.Trailer" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <h3>Sinopsis</h3>
+        <p>@model.Movie.MovieSynopsis</p>
+    </div>
+
+    <div style="margin-top: 10px;">
+        <h3>Actores</h3>
+        <div style="display: flex; flex-direction: column">
+            @foreach (var actor in model.Actors)
+            {
+                <div style="margin-bottom: 2px;">
+                    <img style="width: 50px;" src="@actor.Picture" />
+                    <span style="display:inline-block;width: 200px;"><a href="/actor/@actor.Id/@actor.ActorName.Replace(" ", "-")">@actor.ActorName</a></span>
+                    <span style="display:inline-block; width: 45px;">...</span>
+                    <span>@actor.Character</span>
+                </div>
+            }
+        </div>
+    </div>
+}
+@code{
+    [Parameter] public int MovieId{get;set;}
+    [Parameter] public string Name{get;set;}
+    private ShowMovieDB model;
+    private RenderFragment<Category> linkCategory = (category) =>@<a href="movies/search?categoryId=@category.Id">@category.Name</a>;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var responseHttp = await repositorio.Get<ShowMovieDB>($"api/movies/{MovieId}");
+            if (responseHttp.Error)
+            {
+                if (responseHttp.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    navigationManager.NavigateTo("");
+                }
+                else
+                {
+                    var mensajeError = await responseHttp.GetBody();
+                    await showMessage.ShowErrorMessage(mensajeError);
+                }
+            }
+            else
+            {
+                model = responseHttp.Response;
+            }
+    }
+}

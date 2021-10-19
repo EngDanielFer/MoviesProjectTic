@@ -1,0 +1,57 @@
+@page "/actors/edit/{ActorId:int}"
+@using MoviesProject.Client.Pages.Components
+@inject IServiceMovies movie
+@inject IErrorMessage showMessage
+@inject NavigationManager navigationManager
+
+<div class="container">
+    <div class="jumbotron">
+        <h6>Editar actor</h6>
+        @if (Actor == null)
+        {
+            <div class="alert alert-info" role="alert">Cargando</div>
+        }
+        else
+        {
+            <FormActor OnValidSubmit="Edit" Actor="Actor"></FormActor>
+        }
+    </div>
+</div>
+@code{
+    [Parameter] public int ActorId {get;set;}
+    Actor Actor = new Actor();
+    protected async override Task OnInitializedAsync()
+    {
+        var httpResponse = await movie.Get<Actor>($"api/actors/{ActorId}");
+        if (httpResponse.Error)
+        {
+            @* Validar que el error se debe a que no encontro la ruta: 404 *@
+            if (httpResponse.HttpResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("actors");
+            }
+            else
+            {
+                @* Se encontro otro tipo de error *@
+                await showMessage.ShowErrorMessage(await httpResponse.GetBody());
+            }
+        }
+        else
+        {
+            Actor = httpResponse.Response;
+            Console.WriteLine(Actor.Picture);
+        }
+
+    }
+    private async Task Edit()
+    {
+        var httpResponse = await movie.Put("api/actors", Actor);
+        if (httpResponse.Error)
+        {
+            await showMessage.ShowErrorMessage(await httpResponse.GetBody());
+        }else{
+            navigationManager.NavigateTo("actors");
+        }
+
+    }
+}

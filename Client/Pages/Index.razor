@@ -1,0 +1,29 @@
+﻿@page "/"
+@using MoviesProject.Client.Pages.Components
+@using MoviesProject.Shared.Models
+@inject IServiceMovies movie
+@inject IErrorMessage showMessage
+@inject NavigationManager navigationManager
+
+@* <MovieComponent Movies ="Movies"></MovieComponent> *@
+<div class="container">
+    <div class="jumbotron">
+        <div>
+            <MovieList Movies="EnCartelera"></MovieList>
+        </div>
+        <div>
+            <MovieList Movies="Estrenos"></MovieList>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Movie> Estrenos;
+    private List<Movie> EnCartelera;
+    protected async  override Task OnInitializedAsync()
+    {
+        var responseHttp = await movie.Get<FilterMovie>("api/movies");
+        Estrenos = responseHttp.Response.ProximosEstrenos;
+        EnCartelera = responseHttp.Response.PeliculasEnCartelera;
+    }
+}
